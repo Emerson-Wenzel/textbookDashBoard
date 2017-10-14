@@ -8,17 +8,19 @@ import plotly.plotly as py
 import plotly.graph_objs as go
 import numpy as np
 
-availBooks_df = pd.read_csv(r'C:\Users\emers\Desktop\programming\Projects\dash\TBE\availableTextBooks.csv')
+
+
+availBooks_df = pd.read_csv(r'new_selling.csv')
 #soldBooks_df = pd.read_csv(r'C:\Users\emers\Desktop\programming\Projects\dash\TBE\soldTextBooks.csv')
 
 
 ###Clean up the data
 #Remove $ from prices
-availBooks_df['Price'] = availBooks_df['Price'].str.strip('$')
+availBooks_df['price'] = availBooks_df['price'].str.strip('$')
 #soldBooks_df['Price'] = availBooks_df['Price'].str.strip('$')
 
 #Fill the blank class names with "Misc"
-availBooks_df['ClassName'].fillna('Misc', inplace=True)
+availBooks_df['class'].fillna('Misc', inplace=True)
 
 #classList = set()
 #classList.add(className for className in availBooks_df['ClassName'])
@@ -26,17 +28,6 @@ availBooks_df['ClassName'].fillna('Misc', inplace=True)
 
 #Start app
 app = dash.Dash()
-
-
-'''
-app.layout = html.Div([
-    html.Label('Dropdown'),
-    dcc.Dropdown(
-        options=[
-            {'label':
-'''
-
-x = 5
 
 
 
@@ -51,10 +42,12 @@ def generate_table(dataframe):
         ]) for i in range(len(dataframe))]
     )
 
+
+
 def generate_histogram(df):
     return {
         'data':[go.Histogram(
-            x = df['Price'],
+            x = df['price'],
             xbins=dict(
                 start=0,
                 end = 200,
@@ -69,7 +62,7 @@ def generate_histogram(df):
     }
 
 
-app = dash.Dash()
+#app = dash.Dash()
 
 app.layout = html.Div(
     [
@@ -88,11 +81,10 @@ app.layout = html.Div(
                     id='classDropDown',
                     options=[
                         {'label': className, 'value': className} \
-                        for className in sorted(set(availBooks_df['ClassName']))                          
+                        for className in sorted(set(availBooks_df['class']))                          
                     ],
-
+                    
                     multi=True,
-                    #value="MTL"
                 )
             ]    
         ),
@@ -118,11 +110,12 @@ app.layout = html.Div(
     [Input(component_id='classDropDown', component_property='value')]
 )
 
+
 def update_table(classNameArray):
     print(classNameArray)
     bookIndices = np.zeros((availBooks_df.shape[0]), dtype=bool);
     for className in classNameArray:
-        bookIndices = (availBooks_df['ClassName'] == className) | bookIndices
+        bookIndices = (availBooks_df['class'] == className) | bookIndices
         
     short_df = availBooks_df[bookIndices]
     
@@ -133,10 +126,12 @@ def update_table(classNameArray):
     Output('histogramID', 'figure'),
     [Input('classDropDown', 'value')]
 )
+
+
 def update_histrogram(classNameArray):
     bookIndices = np.zeros((availBooks_df.shape[0]), dtype=bool);
     for className in classNameArray:
-        bookIndices = (availBooks_df['ClassName'] == className) | bookIndices
+        bookIndices = (availBooks_df['class'] == className) | bookIndices
         
     short_df = availBooks_df[bookIndices]
     
