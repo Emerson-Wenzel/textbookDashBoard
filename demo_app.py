@@ -141,22 +141,3 @@ def update_histrogram(classNameArray):
 if __name__ == '__main__':
     app.run_server(debug=True)
 
-
-
-
-
-'''
-                #generate_table(availBooks_df)
-                dcc.Graph(
-                    figure={
-                        'data':[go.Histogram(
-                            x=availableBooks_df['Price']
-                        )],
-                    
-                    'layout': {
-                    'title':'TextBook Prices'
-                    }
-                    }
-                    
-
-   ''' 

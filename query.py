@@ -14,18 +14,16 @@ import decimal
 from boto3.dynamodb.conditions import Key, Attr
 import pandas as pd
 import numpy as np
-
-key_id = ''
-key_secret = ''
+from aws import *
 
 #queries a table and returns the items for a specific class (in a department)
-def query_class(table_name="INVENTORY", department, class_num=-1):
-    Classes = ['Class_1-1', 'Class_1-2', 'Class_1-3', 'Class_1-4',\
+def query_class(department, class_num = -1, table_name="INVENTORY"):
+    classes = ['Class_1-1', 'Class_1-2', 'Class_1-3', 'Class_1-4',\
                'Class_1-5', 'Class_1-6',
                'Class_2-1', 'Class_2-2']
     dynamodb = boto3.resource('dynamodb', region_name='us-east-2', \
-                          aws_access_key_id = key_id,\
-                              aws_secret_access_key = key_secret)
+                          aws_access_key_id = aws_key_id,\
+                              aws_secret_access_key = aws_key_secret)
 
     table = dynamodb.Table(table_name)
 
@@ -37,23 +35,23 @@ def query_class(table_name="INVENTORY", department, class_num=-1):
     )
     response_Dept_2 = table.query(
         IndexName = 'Dept_2-index',
-        KeyConditionExpression = Key('Dept_1').eq(department)
+        KeyConditionExpression = Key('Dept_2').eq(department)
     )
 
     # Convert query responses into a dataframe
     df = pd.DataFrame.from_dict(response_Dept_1['Items'] + \
                                 response_Dept_2['Items'])
 
-
     # Reduce size of df to only include items for specific class
     # If no class number is specified, return all of the items for the department
     if class_num != -1:
-        wanted_indices = np.zeros([1,df.shape[1]]) #Check this
-        for col_name in Classes:
+        wanted_indices = np.zeros([df.shape[0], 1], dtype = bool)[0]
+        for col_name in classes:
             if col_name in df.columns:
-                df.loc[df[col_name] == class_num]
+                wanted_indices = np.logical_or(wanted_indices,\
+                                               (df[col_name] == class_num))
 
-
+        return df.loc[wanted_indices]
     else:
         return df
 
@@ -61,8 +59,8 @@ def query_class(table_name="INVENTORY", department, class_num=-1):
 #scans and returns a dynamoDB table inside of a pandas dataframe
 def scan_table(table_name):
     dynamodb = boto3.resource('dynamodb', region_name='us-east-2', \
-                          aws_access_key_id = key_id,\
-                              aws_secret_access_key = key_secret)
+                          aws_access_key_id = aws_key_id,\
+                              aws_secret_access_key = aws_key_secret)
 
     table = dynamodb.Table(table_name)
     response = table.scan()
