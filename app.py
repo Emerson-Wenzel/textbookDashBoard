@@ -19,6 +19,7 @@ from query import *
 from apscheduler.triggers.interval import IntervalTrigger
 from apscheduler.schedulers.background import BackgroundScheduler
 
+global query_interval
 
 sold_df = scan_table("SOLD_INVENTORY")
 
@@ -72,7 +73,7 @@ app.layout = html.Div(
     ])
 
 def invScanner():
-    return scan_table("INVENTORY")
+    sold_df = scan_table("INVENTORY")
 
 @app.callback(
     Output(component_id='classDropDown', component_property='options'),
@@ -94,9 +95,11 @@ def update_table(department, classNumber):
     short_df = query_class(department, classNumber)
     return generate_table(short_df)
 
+query_interval = 10
 sch = BackgroundScheduler()
 sch.start()
-sch.add_job(func = invScanner, trigger = IntervalTrigger(minutes = 10),
+sch.add_job(func = invScanner, 
+            trigger = IntervalTrigger(minutes = query_interval),
             id = 'timed_query', name = 'Query every 10 min',
             replace_existing = True)
 atexit.register(lambda: sch.shutdown())
