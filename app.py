@@ -17,12 +17,17 @@ import rowdata
 import time
 
 from query import *
+import df_ops
 from apscheduler.triggers.interval import IntervalTrigger
 from apscheduler.schedulers.background import BackgroundScheduler
 
 global query_interval
 
 sold_df = scan_table("SOLD_INVENTORY")
+selling_df = scan_table("INVENTORY")
+
+master_list = df_ops.get_master_list(selling_df)
+
 
 #replace 'na' class names with MISC
 sold_df['Dept_1'].fillna('Misc', inplace=True)
@@ -54,20 +59,13 @@ def get_layout():
                 [
                     html.H3('Dropdown menu'),
                     dcc.Dropdown(
-                        id = 'deptDropDown',
+                        id = 'classDropDown',
                         options=[
-                            {'label': deptName, 'value': deptName}\
-                            for deptName in sorted(set(sold_df['Dept_1']))
+                            {'label': className, 'value': className}\
+                            for className in master_list
                         ],
                     )
                 ]
-            ),
-            html.Div(
-                [
-                    dcc.Dropdown(
-                        id = 'classDropDown'
-                    )
-                 ]
             ),
             html.Div(id='tableID', style={'overflow': 'auto',
                                           'height': '400px'}),
@@ -76,26 +74,20 @@ def get_layout():
 app.layout = get_layout()
 
 def invScanner():
-    sold_df = scan_table("INVENTORY")
-
-@app.callback(
-    Output(component_id='classDropDown', component_property='options'),
-    [Input(component_id='deptDropDown', component_property='value')]
-)
-def update_classDropDown(department):
-    short_df = query_class(department)
-
-    # TODO: Must be expanded to include all class numbers.
-    # definitely other selling (Class_1-2, etc.), unsure about sold
-    return [{'label': classNumber, 'value': classNumber} for classNumber in sorted(set(short_df['Class_1-1']))]
+    selling_df = scan_table("INVENTORY")
         
 @app.callback(
     Output(component_id='tableID', component_property='children'),
-    [Input(component_id='deptDropDown', component_property='value'),
-     Input(component_id='classDropDown', component_property='value')]
+    [Input(component_id='classDropDown', component_property='value')]
 )
-def update_table(department, classNumber):
-    short_df = query_class(department, classNumber)
+def update_table(dept_num):
+    if dept_num is None:
+        return
+    print('--------')
+    print(dept_num)
+    print(type(dept_num))
+    short_df = df_ops.get_class_data(selling_df, dept_num)
+    print(short_df)
     return generate_table(short_df)
 
 query_interval = 10

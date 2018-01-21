@@ -109,8 +109,6 @@ app.layout = html.Div(
     Output(component_id='tableID', component_property='children'),
     [Input(component_id='classDropDown', component_property='value')]
 )
-
-
 def update_table(classNameArray):
     print(classNameArray)
     bookIndices = np.zeros((availBooks_df.shape[0]), dtype=bool);
