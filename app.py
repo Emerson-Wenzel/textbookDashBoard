@@ -4,16 +4,17 @@ app.py
 
 '''
 
+import atexit
 import dash
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
 import pandas as pd
-import plotly.plotly as py
-import plotly.graph_objs as go
 import numpy as np
+import plotly.graph_objs as go
+import plotly.plotly as py
+import rowdata
 import time
-import atexit
 
 from query import *
 from apscheduler.triggers.interval import IntervalTrigger
@@ -71,7 +72,7 @@ def get_layout():
             html.Div(id='tableID', style={'overflow': 'auto',
                                           'height': '400px'}),
         ])
-    
+
 app.layout = get_layout()
 
 def invScanner():
