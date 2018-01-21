@@ -40,37 +40,39 @@ def generate_table(dataframe):
 
 app = dash.Dash()
 
-app.layout = html.Div(
-    [
-        html.Div(
-            [
-                html.H1('TCU Senate Textbook Exchange'),
-            ]
-        ),
+def get_layout():
+    return html.Div(
+        [
+            html.Div(
+                [
+                    html.H1('TCU Senate Textbook Exchange'),
+                ]
+            ),
 
-        html.Div(
-            [
-                html.H3('Dropdown menu'),
-                dcc.Dropdown(
-                    id = 'deptDropDown',
-                    options=[
-                        {'label': deptName, 'value': deptName}\
-                        for deptName in sorted(set(sold_df['Dept_1']))
-                    ],
-                )
-            ]
-        ),
-        html.Div(
-            [
-                dcc.Dropdown(
-                    id = 'classDropDown'
-                )
-             ]
-        ),
-        html.Div(id='tableID', style={'overflow': 'auto', 'height': '400px'}),
-
-
-    ])
+            html.Div(
+                [
+                    html.H3('Dropdown menu'),
+                    dcc.Dropdown(
+                        id = 'deptDropDown',
+                        options=[
+                            {'label': deptName, 'value': deptName}\
+                            for deptName in sorted(set(sold_df['Dept_1']))
+                        ],
+                    )
+                ]
+            ),
+            html.Div(
+                [
+                    dcc.Dropdown(
+                        id = 'classDropDown'
+                    )
+                 ]
+            ),
+            html.Div(id='tableID', style={'overflow': 'auto',
+                                          'height': '400px'}),
+        ])
+    
+app.layout = get_layout()
 
 def invScanner():
     sold_df = scan_table("INVENTORY")
