@@ -1,42 +1,75 @@
-
 '''
-additional.py
-Emerson Wenzel
+df_ops.py
+Mohsin Rizvi and Emerson Wenzel
 
+contains functions that perform operations on a dataframe containing TCU Senate textbook data
 '''
 import pandas as pd
+import numpy as np
 
-def get_class_data(df, dept_num):
-    depts   = ['Dept_1', 'Dept_2']
-    nums    = ['Class_1-1', 'Class_1-2', 'Class_1-3', 'Class_1-4',\
+###
+import query
+#def get_class_data(df, dept_num):
+def get_class_data():
+    df = query.scan_table("INVENTORY")
+    dept_num = "CHEM 1"
+    
+    dept_array   = ['Dept_1', 'Dept_2']
+    class_dict = {'Dept_1' : ['Class_1-1', 'Class_1-2', 'Class_1-3', 'Class_1-4',\
+                              'Class_1-5', 'Class_1-6'],
+                  'Dept_2' : ['Class_2-1', 'Class_2-2']
+    }
+    class_array    = ['Class_1-1', 'Class_1-2', 'Class_1-3', 'Class_1-4',\
                'Class_1-5', 'Class_1-6',
                'Class_2-1', 'Class_2-2']
 
+
+
     # Get the department and class number
     res = pd.DataFrame()
-    print("df_ops------")
-    print(dept_num)
-    print(type(dept_num))
+    print("get_class_data")
+
     vals = dept_num.split(' ')
     q_dept = vals[0]
-    q_num  = vals[1]
+    q_class  = vals[1]
 
-    # Loop through rows
-    for i, row in df.iterrows():
-        # Loop through departments
-        for dept in depts:
-            if dept in df.columns:
-                # Check that the sought department is found
-                if df.get_value(i, dept) == q_dept:
-                    for num in nums:
-                        if num in df.columns:
-                            # Check that the sought number is found
-                            if df.get_value(i, num) == q_num:
-                                res.append(df[i])
-    return res
+    print("department: " + str(q_dept))
+    print("class: " + str(q_class))
+
+    new_df = pd.DataFrame()
+    for dept_col_header in dept_array:
+        print("first loop")
+        #if (len(df[dept_col_header] == q_dept) == 0):
+        #    continue
+        
+        df_dept =  df.loc[df[dept_col_header] == q_dept]
+        if (df_dept.empty == true):
+            pass
+        
+        print("wow")
+        wanted_indices = np.zeros((df_dept.shape[0], 1), dtype=bool)[:,0]
+        
+        print("wow2")
+        #Check the columns for the proper department (e.g)
+        for class_col_header in class_dict[dept_col_header]:
+            print("second loop")
+            if class_col_header in df_dept.columns:
+                print("before bitwise")
+                print(wanted_indices)
+                print(df_dept[class_col_header] == q_class)
+                new_indices = df_dept[class_col_header] == q_class
+                wanted_indices = np.bitwise_or(wanted_indices, new_indices)
+
+        
+        new_df = pd.concat([new_df, df_dept[wanted_indices]])        
+
+    print(new_df)
+    return new_df
 
 
-
+# get_master_list
+#     parameters - a dataframe containing various textbook entries
+#     return value - A set of all classes in the dataframe (e.g. "CHEM 1", "HIST 53", etc.)
 
 def get_master_list(df):
     #Currently, there are only Dept_1 and Dept_2
@@ -90,3 +123,24 @@ if __name__ == '__main__':
     masterset = get_master_list(df)
     print(masterset)
     print(len(masterset))
+
+
+
+
+
+
+    '''                
+    # Loop through rows
+    for i, row in df.iterrows():
+        # Loop through departments
+        for dept in depts:
+            if dept in df.columns:
+                # Check that the sought department is found
+                if df.get_value(i, dept) == q_dept:
+                    for num in nums:
+                        if num in df.columns:
+                            # Check that the sought number is found
+                            if df.get_value(i, num) == q_num:
+                                res.append(df[i])
+    return res
+    '''
