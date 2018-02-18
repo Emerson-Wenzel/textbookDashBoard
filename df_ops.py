@@ -42,21 +42,16 @@ def get_class_data():
         #if (len(df[dept_col_header] == q_dept) == 0):
         #    continue
         
+        #grab all the books that are in the proper department
         df_dept =  df.loc[df[dept_col_header] == q_dept]
         if (df_dept.empty == true):
             pass
         
-        print("wow")
         wanted_indices = np.zeros((df_dept.shape[0], 1), dtype=bool)[:,0]
         
-        print("wow2")
         #Check the columns for the proper department (e.g)
         for class_col_header in class_dict[dept_col_header]:
-            print("second loop")
             if class_col_header in df_dept.columns:
-                print("before bitwise")
-                print(wanted_indices)
-                print(df_dept[class_col_header] == q_class)
                 new_indices = df_dept[class_col_header] == q_class
                 wanted_indices = np.bitwise_or(wanted_indices, new_indices)
 
