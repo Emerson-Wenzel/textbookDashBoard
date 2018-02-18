@@ -27,38 +27,34 @@ def get_class_data():
 
     # Get the department and class number
     res = pd.DataFrame()
-    print("get_class_data")
 
     vals = dept_num.split(' ')
     q_dept = vals[0]
     q_class  = vals[1]
 
-    print("department: " + str(q_dept))
-    print("class: " + str(q_class))
-
-    new_df = pd.DataFrame()
+    new_df = pd.DataFrame(columns=df.columns)
+    print("new_df")
+    print(new_df)
     for dept_col_header in dept_array:
-        print("first loop")
-        #if (len(df[dept_col_header] == q_dept) == 0):
-        #    continue
         
         #grab all the books that are in the proper department
         df_dept =  df.loc[df[dept_col_header] == q_dept]
-        if (df_dept.empty == true):
-            pass
+        if (df_dept.empty == True):
+            continue
         
         wanted_indices = np.zeros((df_dept.shape[0], 1), dtype=bool)[:,0]
+
+        print(df_dept)
         
         #Check the columns for the proper department (e.g)
         for class_col_header in class_dict[dept_col_header]:
             if class_col_header in df_dept.columns:
                 new_indices = df_dept[class_col_header] == q_class
                 wanted_indices = np.bitwise_or(wanted_indices, new_indices)
+                print(wanted_indices)
+                
+        new_df = pd.concat([new_df, df_dept[wanted_indices]])
 
-        
-        new_df = pd.concat([new_df, df_dept[wanted_indices]])        
-
-    print(new_df)
     return new_df
 
 
@@ -112,14 +108,9 @@ def get_master_list(df):
 
 
 if __name__ == '__main__':
-    df = query.scan_table("INVENTORY")
+    df = get_class_data()
+    print("finished function\n")
     print(df)
-    print('start')
-    masterset = get_master_list(df)
-    print(masterset)
-    print(len(masterset))
-
-
 
 
 
