@@ -97,7 +97,29 @@ def get_master_list(df):
     #Turn the master list into a set to remove duplicates
     return sorted(set(masterlist))
         
+# returns the lowest priced book for the class
+def get_min(df, dept_num):
+    new_df = df_ops.get_class_data(df, dept_num)
+    price_df = new_df['Price']
+    minimum = price_df.min()       
 
+    return minimum
+
+# returns the highest priced book for the class
+def get_max(df, dept_num):
+    new_df = df_ops.get_class_data(df, dept_num)
+    price_df = new_df['Price']
+    maximum = price_df.max()
+
+    return maximum
+
+# returns the median price of books for the class
+def get_median(df, dept_num):
+    new_df = df_ops.get_class_data(df, dept_num)
+    price_df = new_df['Price']
+    median = price_df.median()
+   
+    return median 
 
 if __name__ == '__main__':
     df = get_class_data('CHEM 1')
