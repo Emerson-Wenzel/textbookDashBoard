@@ -98,25 +98,25 @@ def get_master_list(df):
     return sorted(set(masterlist))
         
 # returns the lowest priced book for the class
-def get_min(df, dept_num):
-    new_df = df_ops.get_class_data(df, dept_num)
-    price_df = new_df['Price']
-    minimum = price_df.min()       
+def get_min(df):
+    #new_df = get_class_data(df, dept_num)
+    price_df = df['Price']
+    minimum = price_df.min()     
 
     return minimum
 
 # returns the highest priced book for the class
-def get_max(df, dept_num):
-    new_df = df_ops.get_class_data(df, dept_num)
-    price_df = new_df['Price']
+def get_max(df):
+    #new_df = get_class_data(df, dept_num)
+    price_df = df['Price']
     maximum = price_df.max()
 
     return maximum
 
 # returns the median price of books for the class
-def get_median(df, dept_num):
-    new_df = df_ops.get_class_data(df, dept_num)
-    price_df = new_df['Price']
+def get_median(df):
+    #new_df = get_class_data(df, dept_num)
+    price_df = df['Price']
     median = price_df.median()
    
     return median 

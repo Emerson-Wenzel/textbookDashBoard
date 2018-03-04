@@ -74,7 +74,7 @@ def get_layout():
             html.Div(id='tableID', style={'overflow': 'auto',
                                           'height': '400px'}),
 
-            html.Div(id='minMax'),
+            html.Div(id='minMedMax'),
         ])
 
 app.layout = get_layout()
@@ -93,7 +93,26 @@ def update_table(dept_num):
     short_df = df_ops.get_class_data(selling_df, dept_num)
     return generate_table(short_df)
 
+@app.callback(
+    Output(component_id='minMedMax', component_property='children'),
+    [Input(component_id='classDropDown', component_property='value')]
 
+)
+def update_minMedMax(dept_num):
+    if dept_num is None:
+        return
+    short_df = df_ops.get_class_data(selling_df, dept_num)
+    minimum = df_ops.get_min(short_df)
+    median = df_ops.get_median(short_df)
+    maximum = df_ops.get_max(short_df)
+
+    return html.Div(
+        [ 
+            html.H3(minimum),
+            html.H3(median),
+            html.H3(maximum)
+        ]
+        )
 
 
 # Requery the database every *query_interval* minutes.
