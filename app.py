@@ -32,6 +32,8 @@ master_list = df_ops.get_master_list(selling_df)
 #replace 'na' class names with MISC
 sold_df['Dept_1'].fillna('Misc', inplace=True)
 
+
+#builds table from given dataframe
 def generate_table(dataframe):
     columnNames = ['Item', 'Edition', 'Price']
     
@@ -43,6 +45,8 @@ def generate_table(dataframe):
         [html.Tr([html.Td(dataframe.iloc[i][col]) for col in columnNames
         ]) for i in range(len(dataframe))]
     )
+
+
 
 app = dash.Dash()
 
@@ -69,13 +73,16 @@ def get_layout():
             ),
             html.Div(id='tableID', style={'overflow': 'auto',
                                           'height': '400px'}),
+
+            html.Div(id='minMax'),
         ])
 
 app.layout = get_layout()
 
 def invScanner():
     selling_df = scan_table("INVENTORY")
-        
+
+
 @app.callback(
     Output(component_id='tableID', component_property='children'),
     [Input(component_id='classDropDown', component_property='value')]
@@ -83,13 +90,14 @@ def invScanner():
 def update_table(dept_num):
     if dept_num is None:
         return
-    print('--------')
-    print(dept_num)
-    print(type(dept_num))
     short_df = df_ops.get_class_data(selling_df, dept_num)
-    print(short_df)
     return generate_table(short_df)
 
+
+
+
+# Requery the database every *query_interval* minutes.
+# This is to keep the dataframe fresh
 query_interval = 10
 sch = BackgroundScheduler()
 sch.start()

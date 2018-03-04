@@ -9,7 +9,6 @@ import numpy as np
 import query
 
 
-
 def get_class_data(df, dept_num):
     
     dept_array   = ['Dept_1', 'Dept_2']
