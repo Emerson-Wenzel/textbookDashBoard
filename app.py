@@ -75,6 +75,7 @@ def get_layout():
 
                                       html.Div(id='left_col',
                                           children=[
+                                              html.Div(id='left_filter'),
                                               html.Div(id='tableID', style={'overflow': 'auto',
                                                                             'height': '400px'}),
                                           ]
@@ -82,8 +83,8 @@ def get_layout():
 
                                       
 
-                                      html.Div('right_col',
-                                               [
+                                      html.Div(id='right_col',
+                                               children=[
                                                    html.Div(id='minMedMax'),
                                                    html.Div(id='graph')
                                                ]
