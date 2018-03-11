@@ -53,8 +53,8 @@ app = dash.Dash()
 def get_layout():
     return html.Div(
         [
-            html.Div(id='body'
-                     [
+            html.Div(id='body',
+                     children=[
                          html.Div(
                              [
                                  html.H1('TCU Senate Textbook Exchange'),
@@ -70,11 +70,11 @@ def get_layout():
                                                   ],
                          ),
                          
-                         html.Div(id='dashboard'
-                                  [
+                         html.Div(id='dashboard',
+                                  children=[
 
-                                      html.Div(id='left_col'
-                                          [
+                                      html.Div(id='left_col',
+                                          children=[
                                               html.Div(id='tableID', style={'overflow': 'auto',
                                                                             'height': '400px'}),
                                           ]
@@ -82,7 +82,7 @@ def get_layout():
 
                                       
 
-                                      html.Div('right_col'
+                                      html.Div('right_col',
                                                [
                                                    html.Div(id='minMedMax'),
                                                    html.Div(id='graph')
