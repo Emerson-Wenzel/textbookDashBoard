@@ -53,29 +53,49 @@ app = dash.Dash()
 def get_layout():
     return html.Div(
         [
-            html.Div(
-                [
-                    html.H1('TCU Senate Textbook Exchange'),
-                ]
-            ),
+            html.Div(id='body'
+                     [
+                         html.Div(
+                             [
+                                 html.H1('TCU Senate Textbook Exchange'),
+                             ]
+                         ),
 
-            html.Div(
-                [
-                    html.H3('Dropdown menu'),
-                    dcc.Dropdown(
-                        id = 'classDropDown',
-                        options=[
-                            {'label': className, 'value': className}\
-                            for className in master_list
-                        ],
-                    )
-                ]
-            ),
-            html.Div(id='tableID', style={'overflow': 'auto',
-                                          'height': '400px'}),
 
-            html.Div(id='minMedMax'),
-        ])
+                         html.H3('Dropdown menu'),
+                         dcc.Dropdown(id = 'classDropDown',
+                                                  options=[
+                                                      {'label': className, 'value': className}\
+                                                      for className in master_list
+                                                  ],
+                         ),
+                         
+                         html.Div(id='dashboard'
+                                  [
+
+                                      html.Div(id='left_col'
+                                          [
+                                              html.Div(id='tableID', style={'overflow': 'auto',
+                                                                            'height': '400px'}),
+                                          ]
+                                      ),
+
+                                      
+
+                                      html.Div('right_col'
+                                               [
+                                                   html.Div(id='minMedMax'),
+                                                   html.Div(id='graph')
+                                               ]
+                                      )
+
+                                  ]
+                         )
+                     ]
+            )
+            ]
+        )
+
 
 app.layout = get_layout()
 
