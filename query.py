@@ -14,9 +14,13 @@ import decimal
 from boto3.dynamodb.conditions import Key, Attr
 import pandas as pd
 import numpy as np
+from dateutil import parser
 from aws import *
 
+DATE_COL_NAMES = ['Time_recorded', 'Time_sold']
+
 #queries a table and returns the items for a specific class (in a department)
+#Also performs preliminary data cleaning (turns dates strings into date objects)
 def query_class(department, class_num = -1, table_name="INVENTORY"):
     classes = ['Class_1-1', 'Class_1-2', 'Class_1-3', 'Class_1-4',\
                'Class_1-5', 'Class_1-6',
@@ -42,6 +46,11 @@ def query_class(department, class_num = -1, table_name="INVENTORY"):
     df = pd.DataFrame.from_dict(response_Dept_1['Items'] + \
                                 response_Dept_2['Items'])
 
+    #Convert date strings into string objects
+    for col_name in DATE_COL_NAMES:
+        if col_name in df.columns:
+            df[col_name] = string_to_date(df[col_name])
+
     # Reduce size of df to only include items for specific class
     # If no class number is specified, return all of the items for the department
     if class_num != -1:
@@ -57,6 +66,7 @@ def query_class(department, class_num = -1, table_name="INVENTORY"):
 
 
 #scans and returns a dynamoDB table inside of a pandas dataframe
+#Also performs preliminary data cleaning (turns dates strings into date objects)
 def scan_table(table_name):
     dynamodb = boto3.resource('dynamodb', region_name='us-east-2', \
                           aws_access_key_id = aws_key_id,\
@@ -75,11 +85,26 @@ def scan_table(table_name):
 
     df = pd.DataFrame.from_dict(item_ray)
 
+    #Convert date strings into date objects
+    for col_name in DATE_COL_NAMES:
+        if col_name in df.columns:
+            df[col_name] = string_to_date(df[col_name])
+
+
     return df
 
 
-
-
+def string_to_date(array):
+    new_list = list()
+    for item in array:
+        date_obj = ""
+        try:
+            date_obj = parser.parse(item)
+        except:
+            date_obj = parser.parse("1/1/2000")
+        new_list.append(date_obj)
+    return new_list
+        
 
 
 # Helper class to convert a DynamoDB item to JSON.

@@ -48,7 +48,11 @@ def generate_table(dataframe):
 
 
 
+
+
 app = dash.Dash()
+
+
 
 def get_layout():
     return html.Div(
