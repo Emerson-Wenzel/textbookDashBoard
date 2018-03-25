@@ -51,6 +51,9 @@ def query_class(department, class_num = -1, table_name="INVENTORY"):
         if col_name in df.columns:
             df[col_name] = string_to_date(df[col_name])
 
+    #time difference
+    df['Time_difference'] = calculate_time_difference(df)
+
     # Reduce size of df to only include items for specific class
     # If no class number is specified, return all of the items for the department
     if class_num != -1:
@@ -90,6 +93,8 @@ def scan_table(table_name):
         if col_name in df.columns:
             df[col_name] = string_to_date(df[col_name])
 
+    # find time diff 
+    df['Time_difference'] = calculate_time_difference(df)
 
     return df
 
@@ -104,7 +109,25 @@ def string_to_date(array):
             date_obj = parser.parse("1/1/2000")
         new_list.append(date_obj)
     return new_list
-        
+
+# calculates the difference between time in and time sold columns 
+# returns a DataFrame of the column
+def calculate_time_difference(df):
+    new_list = list()
+    time_entered = df['Time_recorded']
+    time_sold = df['Time_sold']
+
+    # go through the whole dataframe
+    for item_in, item_out in zip (time_entered, time_sold):
+        diff = item_out - item_in
+        if (diff.days < 0):
+            diff = item_in - item_out
+        temp = diff.days
+        new_list.append(temp)
+    
+    d = {'Time_difference': new_list}
+    new_df = pd.DataFrame(data = d)
+    return new_df
 
 
 # Helper class to convert a DynamoDB item to JSON.

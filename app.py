@@ -46,8 +46,26 @@ def generate_table(dataframe):
         ]) for i in range(len(dataframe))]
     )
 
+# builds scatterplot from given dataframe
+def generate_scatterplot(df):
+  trace = go.Scatter(
+    x = df['Time_difference'],
+    y = df['Price'],
+    mode = 'markers',
+    text = df['Item']
+    )
+  data = [trace]
 
+  layout = dict(
+    title = 'Previously Sold Books',
+    xaxis = dict(title = 'Days on Market', zeroline = True),
+    yaxis = dict(title = 'Price ($)', zeroline = True)
+    )
 
+  fig = dict(data = data, layout = layout)
+
+  return fig
+   
 
 
 app = dash.Dash()
@@ -90,12 +108,11 @@ def get_layout():
                                       html.Div(id='right_col',
                                                children=[
                                                    html.Div(id='minMedMax'),
-                                                   html.Div(id='graph')
-                                               ]
-                                      )
+                                                   dcc.Graph(id='my-graph'),                                               ]
+                                      ),
 
-                                  ]
-                         )
+                                  ],
+                         ),
                      ]
             )
             ]
@@ -138,6 +155,16 @@ def update_minMedMax(dept_num):
             html.H3(maximum)
         ]
         )
+
+@app.callback(
+    Output(component_id='my-graph', component_property='figure'),
+    [Input(component_id='classDropDown', component_property='value')]
+)
+def update_scatterplot(dept_num):
+    if dept_num is None:
+      return
+    short_df = df_ops.get_class_data(sold_df, dept_num)
+    return generate_scatterplot(short_df)
 
 
 # Requery the database every *query_interval* minutes.

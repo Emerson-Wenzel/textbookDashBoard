@@ -47,6 +47,7 @@ def get_class_data(df, dept_num):
                 
         new_df = pd.concat([new_df, df_dept[wanted_indices]])
 
+
     return new_df
 
 
@@ -120,6 +121,7 @@ def get_median(df):
     median = price_df.median()
    
     return median 
+
 
 if __name__ == '__main__':
     df = get_class_data('CHEM 1')
