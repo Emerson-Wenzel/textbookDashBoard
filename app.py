@@ -15,6 +15,7 @@ import plotly.graph_objs as go
 import plotly.plotly as py
 import rowdata
 import time
+import datetime
 
 from query import *
 import df_ops
@@ -28,6 +29,10 @@ selling_df = scan_table("INVENTORY")
 
 master_list = df_ops.get_master_list(selling_df)
 
+# constant variables
+lower_bound = 5;
+upper_bound = 10;
+min_date = datetime.date(2015, 1, 1)
 
 #replace 'na' class names with MISC
 sold_df['Dept_1'].fillna('Misc', inplace=True)
@@ -48,17 +53,57 @@ def generate_table(dataframe):
 
 # builds scatterplot from given dataframe
 def generate_scatterplot(df):
-  trace = go.Scatter(
-    x = df['Time_difference'],
-    y = df['Price'],
+  clean_df = df.loc[(df['Time_sold']) > min_date]
+
+  # assign row to appropriate dataframe
+  low_df = clean_df.loc[(df['Time_difference'] < lower_bound)]
+  middle_df = clean_df.loc[(df['Time_difference'] >= lower_bound) & (df['Time_difference'] <= upper_bound)]
+  high_df = clean_df.loc[(df['Time_difference'] > upper_bound)]
+    
+  low_string = 'less than ' + str(lower_bound) + ' days'
+  middle_string = 'between ' + str(lower_bound) + ' and ' + upper_bound + ' days'
+  high_string = 'more than ' + str(upper_bound) + ' days'
+
+  # make 3 separate traces
+  trace1 = go.Scatter(
+    x = low_df['Time_sold'],
+    y = low_df['Price'],
+    name = low_string,
     mode = 'markers',
-    text = df['Item']
+    text = df['Item'],
+    marker = dict (
+      size = 10,
+      color = 'blue'
+      )
     )
-  data = [trace]
+
+  trace2 = go.Scatter(
+    x = middle_df['Time_sold'],
+    y = middle_df['Price'],
+    name = middle_string,
+    mode = 'markers',
+    text = df['Item'],
+    marker = dict (
+      size = 10,
+      color = 'red')
+    )
+
+  trace3 = go.Scatter(
+    x = high_df['Time_sold'],
+    y = high_df['Price'],
+    name = high_string,
+    mode = 'markers',
+    text = df['Item'],
+    marker = dict (
+      size = 10,
+      color = 'green')
+    )
+
+  data = [trace1, trace2, trace3]
 
   layout = dict(
     title = 'Previously Sold Books',
-    xaxis = dict(title = 'Days on Market', zeroline = True),
+    xaxis = dict(title = 'Date Sold', zeroline = True),
     yaxis = dict(title = 'Price ($)', zeroline = True)
     )
 
